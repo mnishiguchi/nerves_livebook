@@ -49,7 +49,7 @@ defmodule NervesLivebook.MixProject do
       {:jason, "~> 1.2"},
       {:livebook, "~> 0.2.0", only: [:dev, :prod]},
       {:nerves_runtime, "~> 0.11.3"},
-      {:nerves_pack, "~> 0.4.0"},
+      {:nerves_pack, "~> 0.5.0"},
 
       # Extra Livebook dependencies since Mix.install doesn't work yet
       {:vega_lite, "~> 0.1.0"},

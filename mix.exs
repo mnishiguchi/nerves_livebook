@@ -50,10 +50,10 @@ defmodule NervesLivebook.MixProject do
       {:vega_lite, "~> 0.1"},
       {:kino, "~> 0.3"},
       {:phoenix_pubsub, "~> 2.0"},
-      {:circuits_uart, "~> 1.3", targets: @all_targets},
-      {:circuits_gpio, "~> 1.0 or ~> 0.4", targets: @all_targets},
-      {:circuits_i2c, "~> 1.0 or ~> 0.3", targets: @all_targets},
-      {:circuits_spi, "~> 1.0 or ~> 0.1", targets: @all_targets},
+      {:circuits_uart, "~> 1.3", targets: @all_targets, override: true},
+      {:circuits_gpio, "~> 1.0 or ~> 0.4", targets: @all_targets, override: true},
+      {:circuits_i2c, "~> 1.0 or ~> 0.3", targets: @all_targets, override: true},
+      {:circuits_spi, "~> 1.0 or ~> 0.1", targets: @all_targets, override: true},
       {:nerves_key, "~> 1.0", targets: @all_targets},
       {:pigpiox, "~>0.1", targets: @rpi_targets},
       {:ramoops_logger, "~> 0.1", targets: @all_targets},
@@ -64,6 +64,10 @@ defmodule NervesLivebook.MixProject do
       {:blue_heron, "~> 0.3", override: true, targets: @ble_targets},
       {:blue_heron_transport_uart, "~> 0.1.2", targets: @ble_targets},
       {:nerves_time_zones, "~> 0.1.0", targets: @all_targets},
+
+      # Hello Inky
+      {:chisel, "~> 0.2.0", targets: @all_targets},
+      {:inky, git: "git@github.com:mnishiguchi/inky.git", branch: "mnishiguchi/ssd1608"},
 
       # Nerves system dependencies
       {:nerves_system_rpi, "~> 1.16", runtime: false, targets: :rpi},

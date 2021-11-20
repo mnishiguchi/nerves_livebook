@@ -1,0 +1,112 @@
+# Inky pHAT name badge example
+
+## About
+
+[Inky pHAT](https://shop.pimoroni.com/products/inky-phat) is an electronic paper (ePaper / eInk / EPD) display for [Raspberry Pi](https://www.raspberrypi.org/).
+
+Let's do something similar to [Pimoroni's Inky pHAT name badge example](https://learn.pimoroni.com/article/getting-started-with-inky-phat#name-badge-example) in [Elixir](https://elixir-lang.org/). Here is [Pimoroni's Python code](https://github.com/pimoroni/inky/blob/fc17026df35447c1147e9bfa38988e89e75c80e6/examples/name-badge.py).
+
+This Youtube video [Raspberry Pi, eInk and Nerves with Livebook by Underjord](https://www.youtube.com/watch?v=4cKwihjqiLc) introduces you the basics of Inky on [Nerves](https://www.nerves-project.org/) firmware.
+
+![](https://cdn.learn.pimoroni.com/article/getting-started-with-inky-phat/assets/getting-started-with-inky-phat-2.jpg?width=1024)
+
+## Dependencies
+
+Add these Elixir packages to your list of dependencies in mix.exs:
+
+* https://hex.pm/packages/inky
+* https://hex.pm/packages/chisel
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+def deps do
+  [
+    {:inky, "~> 1.0"},
+    {:chisel, "~> 0.2"}
+  ]
+end
+
+```
+
+## Start Inky server
+
+<!-- livebook:{"livebook_object":"cell_input","name":"Display type","props":{"options":["phat_ssd1608","phat"]},"type":"select","value":"phat_ssd1608"} -->
+
+<!-- livebook:{"livebook_object":"cell_input","name":"Accent","props":{"options":["black","red","yellow"]},"type":"select","value":"black"} -->
+
+```elixir
+display_type = IO.gets("Display type") |> String.trim() |> String.to_existing_atom()
+accent = IO.gets("Accent") |> String.trim() |> String.to_existing_atom()
+
+# Start an Inky server
+{:ok, inky_pid} = Inky.start_link(display_type, accent)
+
+# Inspect the internal state of the Inky server
+:sys.get_state(inky_pid)
+```
+
+## Load BDF fonts
+
+* https://github.com/luisgabrielroldan/chisel
+* https://github.com/olikraus/u8g2/tree/master/tools/font/bdf
+
+<!-- livebook:{"livebook_object":"cell_input","name":"Font","props":{"options":["7x14","8x15"]},"type":"select","value":"7x14"} -->
+
+```elixir
+font_name = IO.gets("Font") |> String.trim()
+fonts_dir = "/data/fonts" |> tap(&File.mkdir_p/1)
+font_path = Path.join([fonts_dir, "#{font_name}.bdf"])
+
+font_url =
+  "https://raw.githubusercontent.com/olikraus/u8g2/master/tools/font/bdf/#{font_name}.bdf"
+
+if File.exists?(font_path) do
+  IO.puts("Already exists #{font_path}")
+else
+  {:ok, {{_, 200, _}, _headers, body}} = :httpc.request(font_url)
+  IO.puts("Downloaded font #{font_name}")
+  File.write(font_path, List.to_string(body))
+end
+
+IO.puts("Loading font #{font_path}")
+{:ok, chisel_font} = Chisel.Font.load(font_path)
+```
+
+## Print pixels on Inky
+
+<!-- livebook:{"livebook_object":"cell_input","name":"Name","type":"text","value":"Masatoshi"} -->
+
+```elixir
+person_name = IO.gets("Name") |> String.trim()
+
+print_badge_fun = fn ->
+  Inky.set_pixels(
+    inky_pid,
+    fn _x, y, _w, h, _pixels ->
+      name_field_top = div(h, 2)
+      name_field_bottom = trunc(h * 0.9)
+
+      cond do
+        y < name_field_top -> :black
+        y < name_field_bottom -> :white
+        true -> :black
+      end
+    end,
+    push: :skip
+  )
+end
+
+print_text_fun = fn text, {x, y}, color, opts ->
+  put_pixel_fun = fn x, y -> Inky.set_pixels(inky_pid, %{{x, y} => color}, push: :skip) end
+  Chisel.Renderer.draw_text(text, x, y, chisel_font, put_pixel_fun, opts)
+end
+
+print_badge_fun.()
+print_text_fun.("Hello!", {24, 1}, :white, size_x: 4, size_y: 3)
+print_text_fun.("My name is", {24, 36}, :white, size_x: 2, size_y: 2)
+print_text_fun.(person_name, {24, 72}, :black, size_x: 3, size_y: 3)
+
+# Push the pixels in bulk
+Inky.set_pixels(inky_pid, %{}, push: :await)
+```

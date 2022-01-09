@@ -46,15 +46,16 @@ defmodule NervesLivebook.MixProject do
       {:livebook, "~> 0.5.0", only: [:dev, :prod]},
       {:plug, "~> 1.12"},
       {:cubdb, "~> 1.1"},
+      {:httpoison, "~> 1.8"},
 
       # Pull in commonly used libraries as a convenience to users.
       {:blue_heron, "~> 0.3", override: true, targets: @ble_targets},
       {:blue_heron_transport_uart, "~> 0.1.2", targets: @ble_targets},
       {:bmp280, "~> 0.2", targets: @all_targets},
-      {:circuits_gpio, "~> 1.0", targets: @all_targets},
-      {:circuits_i2c, "~> 1.0", targets: @all_targets},
-      {:circuits_spi, "~> 1.0 or ~> 0.1", targets: @all_targets},
-      {:circuits_uart, "~> 1.3", targets: @all_targets},
+      {:circuits_gpio, "~> 1.0", targets: @all_targets, override: true},
+      {:circuits_i2c, "~> 1.0", targets: @all_targets, override: true},
+      {:circuits_spi, "~> 1.0 or ~> 0.1", targets: @all_targets, override: true},
+      {:circuits_uart, "~> 1.3", targets: @all_targets, override: true},
       {:input_event, "~> 1.0 or ~> 0.4", targets: @all_targets},
       {:kino, "~> 0.3"},
       {:nerves_key, "~> 1.0", targets: @all_targets},
@@ -66,6 +67,11 @@ defmodule NervesLivebook.MixProject do
       {:scroll_hat, "~> 0.1", targets: @rpi_targets},
       {:vega_lite, "~> 0.1"},
       {:req, "~> 0.2.1"},
+      {:chisel, "~> 0.2.0", targets: @all_targets},
+
+      # Local
+      {:kantan_cluster, path: "../kantan_cluster"},
+      {:inky, path: "../inky_elixir"},
 
       # Nerves system dependencies
       {:nerves_system_rpi, "~> 1.18", runtime: false, targets: :rpi},

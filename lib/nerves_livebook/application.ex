@@ -21,7 +21,8 @@ defmodule NervesLivebook.Application do
 
     children = [
       {CubDB, [data_dir: "/data/database", name: NervesLivebook.Database]},
-      HelloNervesSubscriber
+      HelloNervesSubscriber,
+      InkyPhatWeather.Worker
     ]
 
     Supervisor.start_link(children, opts)

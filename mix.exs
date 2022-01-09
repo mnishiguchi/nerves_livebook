@@ -45,6 +45,7 @@ defmodule NervesLivebook.MixProject do
       {:nerves_pack, "~> 0.6.0"},
       {:livebook, "~> 0.4.0", only: [:dev, :prod]},
       {:plug, "~> 1.12"},
+      {:cubdb, "~> 1.1"},
 
       # Pull in commonly used libraries as a convenience to users.
       {:blue_heron, "~> 0.3", override: true, targets: @ble_targets},

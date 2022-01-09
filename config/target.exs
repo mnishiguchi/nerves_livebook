@@ -33,7 +33,25 @@ config :nerves, :erlinit,
 # * See https://hexdocs.pm/nerves_ssh/readme.html for general SSH configuration
 # * See https://hexdocs.pm/ssh_subsystem_fwup/readme.html for firmware updates
 
+keys =
+  [
+    Path.join([System.user_home!(), ".ssh", "id_rsa.pub"]),
+    Path.join([System.user_home!(), ".ssh", "id_ecdsa.pub"]),
+    Path.join([System.user_home!(), ".ssh", "id_ed25519.pub"])
+  ]
+  |> Enum.filter(&File.exists?/1)
+
+if keys == [],
+  do:
+    Mix.raise("""
+    No SSH public keys found in ~/.ssh. An ssh authorized key is needed to
+    log into the Nerves device and update firmware on it using ssh.
+    See your project's config.exs for this error message.
+    """)
+
 config :nerves_ssh,
+  authorized_keys: Enum.map(keys, &File.read!/1),
+  # user_passwords: [{"livebook", "nerves"}, {"root", "nerves"}],
   daemon_option_overrides: [
     {:pwdfun, &NervesLivebook.ssh_check_pass/2},
     {:auth_method_kb_interactive_data, &NervesLivebook.ssh_show_prompt/3}

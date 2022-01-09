@@ -23,6 +23,11 @@ config :phoenix, :json_library, Jason
 # Livebook's explore section is built at compile-time
 config :livebook, :explore_notebooks, []
 
+# Local time and time zones
+# See https://hexdocs.pm/nerves_time_zones for details.
+
+config :nerves_time_zones, default_time_zone: "America/New_York"
+
 if Mix.target() == :host do
   import_config "host.exs"
 else

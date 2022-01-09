@@ -31,7 +31,7 @@ config :livebook,
 
 # Set the Erlang distribution cookie
 config :livebook,
-  cookie: :nerves_livebook_cookie
+  cookie: :hello
 
 # Endpoint configuration
 port = if mix_target == :host, do: 8080, else: 80

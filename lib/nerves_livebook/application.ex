@@ -18,9 +18,7 @@ defmodule NervesLivebook.Application do
     opts = [strategy: :one_for_one, name: NervesLivebook.Supervisor]
 
     children = [
-      # Children for all targets
-      # Starts a worker by calling: NervesLivebook.Worker.start_link(arg)
-      # {NervesLivebook.Worker, arg},
+      {CubDB, [data_dir: "/data/database", name: NervesLivebook.Database]},
     ]
 
     Supervisor.start_link(children, opts)

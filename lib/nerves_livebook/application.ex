@@ -6,6 +6,8 @@ defmodule NervesLivebook.Application do
   use Application
 
   def start(_type, _args) do
+    KantanCluster.start(node: "nerves", cookie: :hello, connect_to: [:"nerves@nerves-mn00.local"])
+
     initialize_data_directory()
 
     if target() != :host do
@@ -19,6 +21,7 @@ defmodule NervesLivebook.Application do
 
     children = [
       {CubDB, [data_dir: "/data/database", name: NervesLivebook.Database]},
+      HelloNervesSubscriber
     ]
 
     Supervisor.start_link(children, opts)

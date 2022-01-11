@@ -33,5 +33,8 @@ defmodule InkyPhatWeather.Weather do
       {k, [%{"value" => v}]} -> {k, v}
       kv -> kv
     end)
+  rescue
+    e in HTTPoison.Error ->
+      nil
   end
 end

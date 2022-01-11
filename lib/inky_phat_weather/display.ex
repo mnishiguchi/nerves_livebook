@@ -6,14 +6,13 @@ defmodule InkyPhatWeather.Display do
     inky_pid
     last_weather
     last_hello_nerves_measurement
-    icons
   ]a
 
   def refresh_pixels!(state) do
     state = fetch_and_assign_new_data(state)
 
     clear_pixels(state)
-    template(state) |> print_text({10, 12}, :black, [size_x: 2, size_y: 2], state)
+    template(state) |> print_text({10, 12}, [size_x: 2, size_y: 2], state)
     weather_icon(state) |> print_icon(state)
     push_pixels(state)
 
@@ -60,14 +59,11 @@ defmodule InkyPhatWeather.Display do
     end
   end
 
-  def weather_icon(%{last_weather: last_weather, icons: icons}) do
+  def weather_icon(%{last_weather: last_weather}) do
     if not is_nil(last_weather) do
       %{"weatherDesc" => weather_desc} = last_weather
-      icon_name = InkyPhatWeather.Icons.get_icon_name_for_weather(weather_desc)
-
-      if not is_nil(icon_name) do
-        Access.fetch!(icons, icon_name)
-      end
+      icon_name = InkyPhatWeather.Icons.get_weather_icon_name(weather_desc)
+      InkyPhatWeather.Icons.get(icon_name)
     end
   end
 
@@ -92,15 +88,15 @@ defmodule InkyPhatWeather.Display do
     end
   end
 
-  ## Pixel utilities
+  ## Pixel printing
 
   def clear_pixels(state) do
     Inky.set_pixels(state.inky_pid, fn _x, _y, _w, _h, _pixels -> :white end, push: :skip)
   end
 
-  def print_text(text, {x, y}, color, opts, state) do
+  def print_text(text, {x, y}, opts, state) do
     put_pixels_fun = fn x, y ->
-      Inky.set_pixels(state.inky_pid, %{{x, y} => color}, push: :skip)
+      Inky.set_pixels(state.inky_pid, %{{x, y} => :black}, push: :skip)
     end
 
     Chisel.Renderer.draw_text(text, x, y, state.chisel_font, put_pixels_fun, opts)

@@ -45,8 +45,6 @@ defmodule NervesLivebook.MixProject do
       {:nerves_pack, "~> 0.6.0"},
       {:livebook, "~> 0.4.0", only: [:dev, :prod]},
       {:plug, "~> 1.12"},
-      {:cubdb, "~> 1.1"},
-      {:httpoison, "~> 1.8"},
 
       # Pull in commonly used libraries as a convenience to users.
       {:blue_heron, "~> 0.3", override: true, targets: @ble_targets},
@@ -67,9 +65,10 @@ defmodule NervesLivebook.MixProject do
       {:scroll_hat, "~> 0.1", targets: @rpi_targets},
       {:vega_lite, "~> 0.1"},
       {:req, "~> 0.2.1"},
-      {:chisel, "~> 0.2.0", targets: @all_targets},
 
-      # Local
+      # mnishiguchi extras
+      {:chisel, "~> 0.2.0", targets: @all_targets},
+      {:cubdb, "~> 1.1"},
       {:kantan_cluster, path: "../kantan_cluster"},
       {:inky, path: "../inky_elixir"},
 

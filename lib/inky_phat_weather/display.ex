@@ -24,7 +24,7 @@ defmodule InkyPhatWeather.Display do
   def template(state) do
     """
     #{current_time_text()}
-    #{temperature_f_text(state)} / #{humidity_rh_text(state)} / #{state.last_hello_nerves_measurement.iaq}
+    #{temperature_f_text(state)} / #{humidity_rh_text(state)} / #{iaq_text(state)}
     #{weather_description_text(state)}
     #{feels_like_f_text(state)}
     """
@@ -35,32 +35,52 @@ defmodule InkyPhatWeather.Display do
   end
 
   def temperature_f_text(%{last_hello_nerves_measurement: measurement}) do
-    measurement.temperature_c
-    |> Mnishiguchi.Number.convert_temperature_c("F")
-    |> Mnishiguchi.Number.float_to_s(0)
-    |> Kernel.<>("°F")
+    if measurement do
+      measurement.temperature_c
+      |> Mnishiguchi.Number.convert_temperature_c("F")
+      |> Mnishiguchi.Number.float_to_s(0)
+      |> Kernel.<>("°F")
+    else
+      "-"
+    end
   end
 
   def humidity_rh_text(%{last_hello_nerves_measurement: measurement}) do
-    measurement.humidity_rh |> Mnishiguchi.Number.float_to_s(0) |> Kernel.<>(" RH")
+    if measurement do
+      measurement.humidity_rh |> Mnishiguchi.Number.float_to_s(0) |> Kernel.<>(" RH")
+    else
+      "-"
+    end
+  end
+
+  def iaq_text(%{last_hello_nerves_measurement: measurement}) do
+    if measurement do
+      "#{measurement.iaq}"
+    else
+      "-"
+    end
   end
 
   def weather_description_text(%{last_weather: last_weather}) do
-    if not is_nil(last_weather) do
+    if last_weather do
       %{"weatherDesc" => weather_desc} = last_weather
       weather_desc |> String.split(",") |> List.first()
+    else
+      "-"
     end
   end
 
   def feels_like_f_text(%{last_weather: last_weather}) do
-    if not is_nil(last_weather) do
+    if last_weather do
       %{"FeelsLikeF" => feel_like_f} = last_weather
       "Feels like #{feel_like_f}°F"
+    else
+      "-"
     end
   end
 
   def weather_icon(%{last_weather: last_weather}) do
-    if not is_nil(last_weather) do
+    if last_weather do
       %{"weatherDesc" => weather_desc} = last_weather
       icon_name = InkyPhatWeather.Icons.get_weather_icon_name(weather_desc)
       InkyPhatWeather.Icons.get(icon_name)

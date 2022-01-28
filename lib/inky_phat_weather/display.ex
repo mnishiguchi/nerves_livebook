@@ -8,6 +8,7 @@ defmodule InkyPhatWeather.Display do
     last_hello_nerves_measurement
   ]a
 
+  @spec refresh_pixels!(struct()) :: struct()
   def refresh_pixels!(state) do
     state
     |> fetch_and_assign_new_data()
@@ -18,6 +19,7 @@ defmodule InkyPhatWeather.Display do
     |> struct!(last_weather: nil, last_hello_nerves_measurement: nil)
   end
 
+  @spec buffer_text_pixels(struct()) :: struct()
   defp buffer_text_pixels(state) do
     """
     #{current_time_text()}
@@ -28,8 +30,12 @@ defmodule InkyPhatWeather.Display do
     |> set_text_pixels({10, 12}, [size_x: 2, size_y: 2], state)
   end
 
+  @spec buffer_icon_pixels(struct()) :: struct()
   defp buffer_icon_pixels(state) do
-    set_icon_pixels(weather_icon(state), state)
+    case weather_icon(state) do
+      nil -> state
+      icon -> set_icon_pixels(icon, state)
+    end
   end
 
   ## View
@@ -88,8 +94,6 @@ defmodule InkyPhatWeather.Display do
       %{"weatherDesc" => weather_desc} = last_weather
       icon_name = InkyPhatWeather.Icons.get_weather_icon_name(weather_desc)
       InkyPhatWeather.Icons.get(icon_name)
-    else
-      ""
     end
   end
 
